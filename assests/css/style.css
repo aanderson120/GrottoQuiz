@@ -1,18 +1,62 @@
+* {
+    font-family: 'Vollkorn', serif;
+}
+
+a:link {
+    color:black;
+  }
+
+  a:visited {
+    color: grey;
+  }
+  
+a:hover {
+    color: rgb(13, 13, 107);
+  }
+
+h1 {
+    text-align: center;
+}
+
+li {
+    background-color:  rgb(8, 64, 168);
+    margin-top: 10px;
+    padding: 5px 15px;
+    width: 80%;
+    font-size: 25px;
+    color: white;
+    cursor: pointer;
+}
+
+#main {
+    background: url(../images/index.png);
+    background-size: 100vw;
+}
+
+#final {
+    background: url(../images/highScore.png);
+    background-size: 100vw
+}
+
 #container {
     position: absolute;
     left: 30%;
     top: 20%;
-    width: 500px;
-    height: 500px;
-    border: 1px solid purple;
+    width: 50vw;
+    height: 40vw;
+    border: 2px solid black;
+    background-color: white;
+    opacity: 75%;
 }
+
 #goButton {
-    background-color: purple;
+    background-color: rgb(8, 64, 168);
+    color: white;
     margin-left: 33%;
     padding: 15px 32px;
     font-size: 20px;
-    color: white;
 }
+
 #mainBits {
     margin: 20px;
 }
@@ -21,47 +65,47 @@
     float: right;
 }
 
-#goBack {
-    background-color: purple;
+#home {
+    background-color: rgb(8, 64, 168);
+    color: white;
+    font-size: 15px;
     position: relative;
     padding: 10px;
-    font-size: 20px;
-    color: white;
     top: 30%;
-    left: 55%;
-    width: auto;
-    text-align: center;
-    text-decoration: none;
+    float: left;
 }
 
-
-
 #clear {
-    background-color: purple;
+    background-color: rgb(8, 64, 168);
+    color: white;
+    font-size: 15px;
     position: relative;
     padding: 10px;
-    font-size: 20px;
-    color: white;
     top: 30%;
-    right: 5%;
-    text-align: center;
+    float: right;
 }
 
 button {
     border-radius: 8px;
+    cursor: pointer;
+}
+
+#Submit {
+    background-color:  rgb(8, 64, 168);
+    color: white;
+    font-size: 15px;
+    margin-left: 33%;
+    padding: 15px 32px;
+}
+
+#createDiv {
+    margin-top: 20px;
+    border-top: 1px solid lightgray;
 }
 
 textarea {
     width: 90%;
     margin: 20px;
-}
-
-#Submit {
-    background-color: purple;
-    margin-left: 33%;
-    padding: 15px 32px;
-    font-size: 20px;
-    color: white;
 }
 
 label {
@@ -73,68 +117,4 @@ input {
     border: 1px solid lightgray;
 }
 
-h1 {
-    text-align: center;
-}
 
-li {
-    background-color: purple;
-    margin-top: 10px;
-    padding: 5px 15px;
-    width: 80%;
-    font-size: 18px;
-    color: white;
-}
-
-#createDiv {
-    margin-top: 20px;
-    border-top: 1px solid lightgray;
-}
-
-/* Start media queries */
-/* A Media Query max-width: 786px */
-@media screen and (max-width: 786px) {
-/* Resized content to fit 786px  */
-body {
-    max-width: 786px;
-}
-/* Resized main-content to fit 786px  */
-#container {
-position: absolute;
-left: 20%;
-}
-
-a {
-margin-left: 20%;
-}
-#goBack {
-    
-    position: relative;
-    left: 55%;
-}
-
-#clear {
-    
-    position: relative;
-    right: 5%;
-    
-}
-}
-
-/* A Media Query max-width: 640px */
-@media screen and (max-width: 640px) {
-/* Resized content to fit 640px  */
-body {
-    min-width: 640px;
-}
-/* Resized main-content to fit 640px  */
-#container {
-position: absolute;
-left: 10%;
-}
-a {
-  margin-left: 10%;
-}
-
-
-}

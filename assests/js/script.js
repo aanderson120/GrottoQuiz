@@ -4,11 +4,13 @@ var container = document.querySelector("#container");
 var countdown = document.querySelector("#countdown");
 var mainBits = document.querySelector("#mainBits");
 var timer = document.querySelector("#goButton");
+var questionDiv = document.querySelector("#questionDiv");
 var options = document.createElement("ul");
 
 var score = 0;
-var questionIndex = 0;
-var secondsLeft = 60;
+var questionIndex = 1;
+var timeLimit = 60;
+var secondsLeft = timeLimit;
 var timerInterval = 0;
 var penalty = 10;
 
@@ -61,21 +63,21 @@ timer.addEventListener("click", function () {
             if (secondsLeft <= 0) {
                 clearInterval(timerInterval);
                 allDone();
-                countdown.textContent = "Time's up!";
+                countdown.textContent = "Too slow...";
             }
         }, 1000);
     }
     render(questionIndex);
 });
 
-function render(questionIndex) {
+function render(qIndex) {
     mainBits.innerHTML = "";
     options.innerHTML = "";
     // For loops to loop through all info in array
     for (i = 0; i < questions.length; i++) {
         // changes question title only
-        var userQuestion = questions[questionIndex].ask;
-        var userChoices = questions[questionIndex].choices;
+        var userQuestion = questions[qIndex].ask;
+        var userChoices = questions[qIndex].choices;
         mainBits.textContent = userQuestion;
     }
     // New for each for question choices
@@ -138,31 +140,37 @@ function compare(event) {
 
     if (questionIndex >= questions.length) {
         allDone();
-        createDiv.textContent = "You made it!!" + "You got" + score + "/" + questionIndex.length + "Correct!";
+        createDiv.textContent = "You made it!!" + " You got " + score + "/" + questions.length + " Correct!";
     }
     else {
-        render (questionIndex);
+        render(questionIndex);
     }
     questionDiv.appendChild(createDiv);
 }
 
 function allDone() {
-    questionDiv.innerHTML = "";
+    disableButtons();
+    clearInterval(timerInterval);
+
     countdown.innerHTML = "";
 
     //create heading
-    var createH1 = document.createElement("h1");
-    createH1.setAttribute("id", "createH1");
-    createH1.textContent = "All Done!"
+    var theEnd = document.createElement("h1");
+    theEnd.setAttribute("id", "theEnd");
+    theEnd.textContent = "You made it!"
 
-    questionDiv.appendChild(createH1);
+    questionDiv.appendChild(theEnd);
+
+    // Paragraph
+    var createP = document.createElement("p");
+    createP.setAttribute("id", "createP");
+   
 
     //replaces time with score
     if (secondsLeft >=0) {
-        var timeRemaining = secondsLeft;
+        var timeRemaining = timeLimit - secondsLeft;
         var createP2 = document.createElement("p");
-        clearInterval(holdInterval);
-        createP2.textContent = "Your final score is:" + timeRemaining;
+        createP2.textContent = "You reached the goal in with " + secondsLeft + " seconds remaining";
 
         questionDiv.appendChild(createP2);
     }
@@ -171,66 +179,62 @@ function allDone() {
     var createInfo = document.createElement("info");
     createInfo.setAttribute("id", "createInfo");
     createInfo.textContent = "Enter your initials:";
-
     questionDiv.appendChild(createInfo);
 
-    //submit
+    //inputs initals
+    var createInput = document.createElement("input");
+    createInput.setAttribute("type", "text");
+    createInput.setAttribute("id", "initials");
+    createInput.textContent = "";
+    mainBits.appendChild(createInput);
 
+
+    //submit
     var createSubmit = document.createElement("button");
     createSubmit.setAttribute("type", "submit");
     createSubmit.setAttribute("id", "submit");
     createSubmit.textContent = "submit";
 
-    questionDiv.appendChild(createSubmit);
+    mainBits.appendChild(createSubmit);
 
-    if (initials === null) {
-        console.log("new phone who dis");
-    }
-    else{
-        var finalScore = {
-            initials: initials,
-            score: timeRemaining
-        }
-        console.log(finalScore);
-        allScores = localStorage.getItem("allScores")
-        if (allScores === null) {
-            allScores = [];
-        }
-        else {
-            allScores = JSON.parse(allScores);
-        }
-        allScores.push(finalScore);
-        var newScore = JSON.stringify(allScores);
-        localStorage.setItem ("allScores", newScore);
+    // Event listener to capture initials and local storage for initials and score
+    createSubmit.addEventListener("click", function () {
+        var initials = createInput.value;
 
-        window.location.replace("./highscores.html ");
-    }
+        if (initials === null) {
+            alert ("Enter a value");
+            console.log("New Phone Who Dis>");
+
+        } else {
+            var finalScore = {
+                initials: initials,
+                score: timeRemaining
+            }
+            console.log(finalScore);
+            var allScores = localStorage.getItem("allScores");
+            if (allScores === null) {
+                allScores = [];
+            } else {
+                allScores = JSON.parse(allScores);
+            }
+            allScores.push(finalScore);
+            var newScore = JSON.stringify(allScores);
+            localStorage.setItem("allScores", newScore);
+            // Travels to final page
+            window.location.replace("./HighScores.html");
+        }
+    });
+
 }
 
-//high score page
 
-var highScore = document.querySelector("#highScore");
-var clear = document.querySelector("#clear");
-var goBack = document.querySelector("goBack");
 
-//Clear scores when button is clicked
-clear.addEventListener("click", function(){
-    localStorage.clear();
-    location.reload();
-});
-
-var allScores = localStorage.getItem("allScores");
-allScores = Json.parse(allScores);
-
-if (allScores !==null) {
-    for (var i = 0; i <allScores.length; i++){
-        var createLi = document.createElement("li");
-        createLi.textContent = allScores[i].initials + allScores[i].score;
-        highScore.appendChild(createLi);
+function disableButtons() {
+    var questionList = mainBits.getElementsByTagName("ul")[0];
+    var questions = questionList.getElementsByTagName("li");
+    for (var i = 0; i < questions.length; ++i) {
+        questions[i].removeEventListener("click", (compare));
+        questions[i].style.backgroundColor = "gray";
+        questions[i].style.cursor = "default";
     }
 }
-
-//going home
-goBack.addEventListener("click", function(){
-    window.location.replace("index.html");
-});
