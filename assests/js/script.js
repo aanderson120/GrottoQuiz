@@ -8,8 +8,8 @@ var questionDiv = document.querySelector("#questionDiv");
 var options = document.createElement("ul");
 
 var score = 0;
-var questionIndex = 1;
-var timeLimit = 60;
+var questionIndex = 0;
+var timeLimit = 120;
 var secondsLeft = timeLimit;
 var timerInterval = 0;
 var penalty = 10;
@@ -30,7 +30,7 @@ var questions = [
         home: "Spelunking-Gross"
     },
     {
-        ask: "No Need to try something dangerous! You creep down the main branch and spy thorugh the dim remaining light a switchback headed gradually up, and a rickey lader down. Do you...",
+        ask: "You creep down the main branch and spy thorugh the dim remaining light a switchback headed gradually up, and a rickey lader down. Do you...",
         choices: ["Take Switchback", "Climb Ladder", "Wait for someone else to come and see what they do"],
         correct: "Climb Ladder",
         wrong3: "Take Switchback",
@@ -73,7 +73,7 @@ timer.addEventListener("click", function () {
 function render(qIndex) {
     mainBits.innerHTML = "";
     options.innerHTML = "";
-    // For loops to loop through all info in array
+    // For loops to loop through questions
     for (i = 0; i < questions.length; i++) {
         // changes question title only
         var userQuestion = questions[qIndex].ask;
@@ -106,32 +106,32 @@ function compare(event) {
             createDiv.textContent = "Onward!!"
         }
 
-        //for wrong1, wrong2, wrong3, wrong4, and wrong5 user should go back to previous question -- but how? also -10seconds
+        //for wrong1, wrong2, wrong3, wrong4, and wrong5 reveals different  responses and lose 10seconds
         else if (element.textContent == questions[questionIndex].wrong1) {
             secondsLeft -= penalty;
-            createDiv.textContent = "Try harder next time"
+            createDiv.textContent = "Try harder next time -- and pick up the pace, you just lost 10 seconds!"
         }
         else if (element.textContent == questions[questionIndex].wrong2) {
             secondsLeft -= penalty;
-            createDiv.textContent = "The dark, winding fissure proves too difficult to navigate. You quickly become stymied and frustrated."
+            createDiv.textContent = "The dark, winding fissure proves too difficult to navigate. You quickly become stymied and frustrated. No you have to double back, and lose 10 seconds."
         }
         else if (element.textContent == questions[questionIndex].wrong3) {
             secondsLeft -=penalty;
-            createDiv.textContent = "The switchback leads you up and down a dark corridor, around a bend, and through a particularly confined tunnel. You are back at the entrance!"
+            createDiv.textContent = "The switchback leads you up and down a dark corridor, around a bend, and through a particularly confined tunnel. You are back at the entrance! You gotta run to catch up, you're down 10 seconds!"
         }
         else if (element.textContent == questions[questionIndex].wrong4) {
             secondsLeft -=penalty;
-            createDiv.textContent = "Seemingly infinite rungs take you down, and down, and down. After an exausting while, you realize you need to retreat, least you get stuck down there forever..."
+            createDiv.textContent = "Seemingly infinite rungs take you down, and down, and down. After an exausting while, you realize you need to retreat, least you get stuck down there forever...there goes 10 seconds while you find you're way back."
         }
         else if (element.textContent == questions[questionIndex].wrong5) {
             secondsLeft -=penalty;
-            createDiv.textContent = "You came all this way to turn around?!"
+            createDiv.textContent = "You came all this way to turn around?! I should take away more than 10 seconds!"
         }
 
         //when user clicks 'home' button, game ends with 0 points
         else {
             secondsLeft = 0
-            createDiv.textContent = "No...just no..."
+            createDiv.textContent = "Were you unsure of what you were getting into? Without the right path you may be stuck here forever.  Good luck friend!"
         }
     }
 
@@ -157,7 +157,7 @@ function allDone() {
     //create heading
     var theEnd = document.createElement("h1");
     theEnd.setAttribute("id", "theEnd");
-    theEnd.textContent = "You made it!"
+    theEnd.textContent = "So are you going to head home or go exploring?"
 
     questionDiv.appendChild(theEnd);
 
@@ -167,35 +167,43 @@ function allDone() {
    
 
     //replaces time with score
-    if (secondsLeft >=0) {
-        var timeRemaining = timeLimit - secondsLeft;
+    var timeRemaining = 0;
+    if (secondsLeft > 0) {
+        timeRemaining = timeLimit - secondsLeft;
         var createP2 = document.createElement("p");
-        createP2.textContent = "You reached the goal in with " + secondsLeft + " seconds remaining";
+        createP2.textContent = "You reached the goal with " + secondsLeft + " seconds remaining";
 
         questionDiv.appendChild(createP2);
     }
+    
+    else if (secondsLeft <= 0) {
+        theEnd.textContent = "Now you've done it...you're stuck here forever! --not really, but you get nothing!"
+    }
+
+    //the form (append all children to this, then add this to the page)
+    var createForm = document.createElement("form");
+    createForm.setAttribute("id", "createForm");
+    createForm.setAttribute("action", "./HighScores.html");
 
     //user info
     var createInfo = document.createElement("info");
     createInfo.setAttribute("id", "createInfo");
-    createInfo.textContent = "Enter your initials:";
-    questionDiv.appendChild(createInfo);
+    createInfo.textContent = "Enter your initials: ";
+    createForm.appendChild(createInfo);
 
     //inputs initals
     var createInput = document.createElement("input");
     createInput.setAttribute("type", "text");
     createInput.setAttribute("id", "initials");
+    createInput.setAttribute("name", "initials");
     createInput.textContent = "";
-    mainBits.appendChild(createInput);
-
+    createForm.appendChild(createInput);
 
     //submit
     var createSubmit = document.createElement("button");
-    createSubmit.setAttribute("type", "submit");
+    createSubmit.setAttribute("type", "button");
     createSubmit.setAttribute("id", "submit");
     createSubmit.textContent = "submit";
-
-    mainBits.appendChild(createSubmit);
 
     // Event listener to capture initials and local storage for initials and score
     createSubmit.addEventListener("click", function () {
@@ -208,9 +216,13 @@ function allDone() {
         } else {
             var finalScore = {
                 initials: initials,
-                score: timeRemaining
+                score: score,
+                questions: questions.length,
+                timeRemaining: timeRemaining,
+                secondsLeft: secondsLeft
             }
             console.log(finalScore);
+
             var allScores = localStorage.getItem("allScores");
             if (allScores === null) {
                 allScores = [];
@@ -218,13 +230,20 @@ function allDone() {
                 allScores = JSON.parse(allScores);
             }
             allScores.push(finalScore);
+            console.log(allScores);
+
             var newScore = JSON.stringify(allScores);
             localStorage.setItem("allScores", newScore);
+            console.log(newScore);
+
             // Travels to final page
             window.location.replace("./HighScores.html");
         }
     });
 
+    createForm.appendChild(createSubmit); //need to add the submit button to the form variable after all the form info is set (including click function)
+
+    mainBits.appendChild(createForm); //now add the form to the page
 }
 
 
